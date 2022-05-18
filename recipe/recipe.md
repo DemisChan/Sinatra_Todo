@@ -3,6 +3,11 @@
 ## 1. Describe the Problem
 
 _Put or write the user story here. Add any clarifying notes you might have._
+> I want an application to keep my Todo list 
+* To add tasks
+* To list tasks
+* To update tasks
+* To delete tasks from list
 
 ## 2. Design the Data Model Class
 
@@ -16,27 +21,33 @@ class TodoList
   def initialize
   end
 
-  def all
-    # Returns a list of strings
+  def list
+  # Returns a list with tasks
   end
 
-  def add(task) # task is a string
-    # No return value
+  def add(task)
+  # task is a string
+  # Returns nothing
+  # Adds the task to the list
   end
 
-  def get(index) # index is a number
-    # Returns a string, the task at the given index
-  def
+  def get(index)
+  # index is a number
+  # Retuns a task at given index
 
-  def update(index, new_task) # index is a number, new_task is a string
-    # Updates the task at index to be the text new_task
-    # No return value
+  def delete(index)
+  # Index is a number representing the task in the list
+  # Returns nothing
+  # Removes the task from the list
   end
 
-  def remove(index) # index is a number
-    # Deletes the task at index
+  def update(index, new_task)
+  # new_taskis string 
+  # returns nothing
+  # Replaces the task at given index with new_task text
   end
 end
+
 ```
 
 _Check it against these rules:_
@@ -62,29 +73,34 @@ _Map them to the methods in your class._
 
 ```ruby
 # EXAMPLE
+todo_list = TodoList.new
 
-# Request: GET /todos
-todo_list.all
+# GET /todos
+todo_list.list
 
-# GET /todos/:index
-todo_list.get(index)
+# GET /todos/:id
+todo_list.get(id)
 
 # POST /todos
-# With data: { task: "Walk the dog" }
-reminder.add(task)
+# With data: task = Walk the dog
+todo_list.add(task)
 
-# PATCH /todos/:index
-# With data: { task: "Walk the cat" }
-reminder.update(index, task)
+# PATCH /todo/:id
+# With data: task = Walk the cat
+todo_list.update(id, task)
 
-# DELETE /todos/:index
-reminder.remove(index)
+#DELETE /todo/:id
+todo_list.remove(id)
 ```
 
 > Remember:
+
 > GET: Getting a single item or a list of items
+
 > POST: Adding an item
+
 > PATCH: Updating an item
+
 > DELETE: Deleting an item
 
 ## 4. Create Examples
@@ -93,65 +109,87 @@ _Create examples of the requests and their responses in different scenarios._
 
 ```ruby
 # EXAMPLE
-
-# 1 - Getting an empty list of todos
+# 1 List an empty todo list
 Request: GET /todos
-Response: """
-You have nothing to do.
-"""
+Response:
+  'You do not have any tasks to do.'
 
-# 2 - Adding a todo and listing it
-Request: POST /todos
-  Data: { task: "Walk the dog" }
-Request: GET /todos
-  Response: """
-  1. Walk the dog
+# 2 Adding a task and listing out the tasks
+Request: POST/todos
+  With Data: task = Walk the dog
+Response:
+  'You have added a task'
+
+Request: GET/todos
+Response: 
+  '1. Walk the dog'
+  
+# 3 Adding multiple tasks and listing out the tasks
+Request: POST/todos
+  With Data: task = Walk the dog
+Request: POST/todos
+  With Data: task = Walk the cat
+Request: POST/todos
+  With Data: task = Walk the frog
+
+Request: GET/todos
+Response: 
   """
-
-# 3 - Adding multiple todos and listing them
-Request: POST /todos
-   Data: { task: "Walk the dog" }
-Request: POST /todos
-   Data: { task: "Walk the cat" }
-Request: POST /todos
-   Data: { task: "Walk the frog" }
-Request: GET /todos
-  Response: """
   1. Walk the dog
   2. Walk the cat
   3. Walk the frog
   """
 
-# 3 - Adding multiple todos, deleting one, and listing them
-Request: POST /todos
-  Data: { task: "Walk the dog" }
-Request: POST /todos
-  Data: { task: "Walk the cat" }
-Request: POST /todos
-  Data: { task: "Walk the frog" }
+# 4 Adding multiple tasks deleting one and listing out the tasks
+Request: POST/todos
+  With Data: task = Walk the dog
+Request: POST/todos
+  With Data: task = Walk the cat
+Request: POST/todos
+  With Data: task = Walk the frog
 Request: DELETE /todos/2
-Request: GET /todos
-  Response: """
+Response:
+  'You have deleted a task'
+
+Request: GET/todos
+Response: 
+  """
   1. Walk the dog
   2. Walk the frog
   """
 
-# 3 - Adding multiple todos, updating one, and listing them
-Request: POST /todos
-  Data: { task: "Walk the dog" }
-Request: POST /todos
-  Data: { task: "Walk the cat" }
-Request: POST /todos
-  Data: { task: "Walk the frog" }
+# 5 Adding multiple tasks deleting one and listing out the tasks
+Request: POST/todos
+  With Data: task = Walk the dog
+Request: POST/todos
+  With Data: task = Walk the cat
+Request: POST/todos
+  With Data: task = Walk the frog
 Request: PATCH /todos/2
-  Data: { task: "Walk the zebra" }
-Request: GET /todos
-  Response: """
+  With Data: task = Walk the zebra
+Response:
+  'You have updated a task'
+
+Request: GET/todos
+Response: 
+  """
   1. Walk the dog
   2. Walk the zebra
-  2. Walk the frog
+  3. Walk the frog
   """
+
+# 6 Adding a task and listing that task individually
+Request: POST/todos
+  With Data: task = Walk the dog
+Response:
+  'You have added a task'
+
+Request: GET/todos/1
+Response: 
+  'Walk the dog'
 ```
+
+
 
 ## 5. Translate the Examples to Web Tests
 
@@ -160,12 +198,7 @@ _Translate your examples to tests using `Rack::Test`_
 ```ruby
 # EXAMPLE
 
-RSpec.describe "Todo Application" do
-  it "gets an empty list of todos" do
-    get "/todos"
-    expect(last_response.body).to eq "You have nothing to do."
-  end
-end
+
 ```
 
 ## 6. Implement the Behaviour

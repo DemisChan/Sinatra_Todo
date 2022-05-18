@@ -3,6 +3,8 @@
 require 'sinatra/base'
 require 'sinatra/reloader'
 
+require "todo_list"
+
 # You will want to require your data model class here
 
 class WebApplicationServer < Sinatra::Base
@@ -26,12 +28,36 @@ class WebApplicationServer < Sinatra::Base
 
   # YOUR CODE GOES BELOW THIS LINE
 
-  # ...
+  get '/todos' do
+    if todo_list.list.empty?
+      return "You have nothing to do in your todo list.\n"
+    else
+      formatted_tasks = todo_list.list.map.with_index do |task, idx|
+        "#{idx + 1}. #{task}"
+      end
+      return formatted_tasks.join("\n") + "\n"
+    end
+  end
 
-  # This is an example of setting up a new instance using the global data store.
-  # def your_data_model
-  #   $global[:your_data_model] ||= YourDataModel.new
-  # end
+  post '/todos' do
+    todo_list.add(params[:task])
+    return "You have added a task.\n"
+  end
+
+  get '/todos/:id' do
+    if todo_list.list.empty?
+      return "You have nothing to do in your todo list.\n"
+    else
+      id = params[:id].to_i
+      todo_list.get(id) + "\n"
+    end
+  end
+
+
+  
+  def todo_list
+    $global[:todo_list] ||= TodoList.new
+  end
 
   # EXAMPLE ROUTES
 
